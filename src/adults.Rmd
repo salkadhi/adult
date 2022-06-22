@@ -1,0 +1,114 @@
+---
+knit: (function(input, ...) {
+    rmarkdown::render(
+      input,
+      output_dir = "../"
+    )
+  })
+title: "Adult Incomes"
+author: "Sultan Alkadhi"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+This dataset was compiled by the US Census Bureau in 1994. It is used to group individuals in the US to incomes above or below $50,000. Other variables in the dataset include age, gender, education, race, and hours-per-week worked, and others I feel were not worthy of including in this EDA. 
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Data
+
+Load libraries and dataset
+```{r include=FALSE}
+library(tidyverse)
+library(here)
+library(DT)
+library(ggthemes)
+adult <- read_csv(here("data/adult.csv"))
+```
+
+```{r message=TRUE}
+adult 
+ggplot(adult) +
+ aes(x = income,fill=gender) +
+ geom_bar(pstat="count") +
+ theme_economist_white()
+```
+
+
+There are approx 50k entries in the dataset. Incomes above 50 are expectedly less represented. Interestingly, there are proportionally more females in the lower income category. 
+
+```{r}
+ggplot(adult) +
+  aes(x = race) +
+  geom_bar() +
+  coord_flip()+
+  theme_economist_white()
+```
+
+Most of the dataset is of the white "race," so further analysis of this column is not warranted.
+
+```{r}
+ggplot(adult) +
+  aes(x = gender) +
+  geom_bar() +
+  theme_economist_white()
+
+table(adult['gender'])
+
+```
+
+Males are twice the number of females in this dataset for some reason.
+
+# EDA
+
+```{r}
+ggplot(adult) +
+ aes(x = `hours-per-week`, y = gender) +
+ geom_boxplot() +
+  theme_economist_white()
+```
+
+Men work longer hours than women, could be a reason for the income discrepancy.
+
+
+
+
+```{r}
+
+adult %>%
+ filter(!(education %in% c("12th", "1st-4th", "5th-6th", "9th", "Preschool", "11th", "10th", "7th-8th"))) %>%
+ggplot(
+ aes(x = `hours-per-week`, y = education)) +
+ geom_boxplot() +
+  theme_economist_white()
+```
+
+High school grad and 'some college' work the least amount of hours, while professional school and doctorates work the longest.
+
+```{r}
+ggplot(adult) +
+ aes(x = `educational-num`, y = gender) +
+ geom_boxplot() +
+ theme_economist_white()
+```
+
+Men and women have comparable levels of education. So they should, in theory, receive the same incomes. 
+
+# Conclusion
+
+Although the inequality in incomes between men and women is disturbing, an equal number of females was not included in this dataset. That being said, the discrepancy in incomes between them maybe in part explained by the longer hours worked by the former.
+
+$~$
+
+
+
+
+
+
+
+
